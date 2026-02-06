@@ -73,10 +73,7 @@ export default function SettingsScreen() {
       <PremiumBackground />
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: Platform.OS === 'ios' ? 140 : 120 }
-        ]}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}

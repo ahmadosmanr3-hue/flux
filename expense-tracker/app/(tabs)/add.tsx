@@ -87,10 +87,7 @@ export default function AddTransactionScreen() {
       <PremiumBackground />
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: Platform.OS === 'ios' ? 180 : 150 }
-        ]}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
