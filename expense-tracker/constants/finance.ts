@@ -20,12 +20,12 @@ export const THEME = {
 
   // Advanced Glassmorphism
   glass: {
-    background: 'rgba(255, 255, 255, 0.03)', // More subtle
-    border: 'rgba(255, 255, 255, 0.08)', // Thinner, crisper border
-    backdrop: 'blur(30px)', // Heavier blur for depth
-    backgroundLight: 'rgba(255, 255, 255, 0.08)',
-    borderLight: 'rgba(255, 255, 255, 0.12)',
-    input: 'rgba(255, 255, 255, 0.03)', // For input fields
+    background: 'rgba(255, 255, 255, 0.04)', // Slightly more visible
+    border: 'rgba(255, 255, 255, 0.15)', // Sharper border for glass
+    backdrop: 'blur(40px)', // Deep blur
+    backgroundLight: 'rgba(255, 255, 255, 0.1)',
+    borderLight: 'rgba(255, 255, 255, 0.2)',
+    input: 'rgba(255, 255, 255, 0.05)',
   },
 
   // Vibrant Neon Accents

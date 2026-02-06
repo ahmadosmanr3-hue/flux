@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Platform } from 'react-native';
 import { useFinance } from '@/contexts/FinanceContext';
 import { THEME } from '@/constants/finance';
 import { GlassCard } from '@/components/GlassCard';
-import { FadeIn, SlideUp, AnimatedButton } from '@/components/Animations';
+import { FadeIn, SlideUp } from '@/components/Animations';
+import { PremiumBackground } from '@/components/PremiumBackground';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -61,23 +62,20 @@ export default function DashboardScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={[THEME.background, THEME.backgroundSecondary]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      <PremiumBackground />
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 120 }]}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <FadeIn delay={100}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Dashboard</Text>
+            <Text style={styles.headerTitle}>FluX</Text>
             <Text style={styles.headerSubtitle}>
               {new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
-                year: 'numeric',
                 month: 'long',
                 day: 'numeric'
               })}
@@ -90,8 +88,8 @@ export default function DashboardScreen() {
           <GlassCard gradient style={styles.netWorthCard}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Net Worth</Text>
-              <View style={[styles.indicator, { backgroundColor: THEME.primary }]}>
-                <Text style={styles.indicatorText}>
+              <View style={[styles.indicator, { backgroundColor: THEME.primaryGlow }]}>
+                <Text style={[styles.indicatorText, { color: THEME.primary }]}>
                   {netWorth.usd >= 0 ? '↑' : '↓'}
                 </Text>
               </View>
@@ -100,237 +98,183 @@ export default function DashboardScreen() {
               {formatCurrency(animatedValues.netWorth, 'USD')}
             </Text>
             <Text style={styles.secondaryAmount}>
-              {formatCurrency(animatedValues.netWorth * 1500, 'IQD')}
+              {formatCurrency(Math.abs(netWorth.iqd), 'IQD')}
             </Text>
-            <View style={styles.netWorthChart}>
-              <View style={[styles.chartBar, { width: `${Math.min(Math.abs(netWorth.usd) / 10, 100)}%` }]} />
-            </View>
           </GlassCard>
         </SlideUp>
 
         {/* Revenue Card */}
         <SlideUp delay={300}>
-          <GlassCard style={styles.revenueCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>This Month's Revenue</Text>
-              <LinearGradient
-                colors={THEME.gradients.income}
-                style={styles.revenueIndicator}
-              >
-                <Text style={styles.revenueIndicatorText}>
-                  {monthlyRevenue > 0 ? '↑' : '→'}
-                </Text>
-              </LinearGradient>
-            </View>
-            <Text style={styles.revenueAmount}>
-              {formatCurrency(animatedValues.revenue, 'USD')}
-            </Text>
-            <View style={styles.revenueBreakdown}>
-              <Text style={styles.revenueText}>
-                KUBER + Nutrify
+          <View style={styles.row}>
+            <GlassCard style={styles.halfCard}>
+              <Text style={styles.cardTitle}>App Revenue</Text>
+              <Text style={styles.statAmount}>
+                {formatCurrency(animatedValues.revenue, 'USD')}
               </Text>
-            </View>
-          </GlassCard>
+              <Text style={styles.revenueText}>This Month</Text>
+            </GlassCard>
+
+            <GlassCard style={styles.halfCard}>
+              <Text style={styles.cardTitle}>Profit Margin</Text>
+              <Text style={[styles.statAmount, { color: THEME.primary }]}>+24%</Text>
+              <Text style={styles.revenueText}>vs last month</Text>
+            </GlassCard>
+          </View>
         </SlideUp>
 
         {/* Recent Activity */}
         <SlideUp delay={400}>
-          <GlassCard style={styles.activityCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Recent Activity</Text>
-              <Text style={styles.activityCount}>
-                {recentTransactions.length} transactions
-              </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent Activity</Text>
+            <View style={styles.activityCount}>
+              <Text style={styles.activityCountText}>{recentTransactions.length}</Text>
             </View>
+          </View>
+
+          <View style={styles.transactionsList}>
             {recentTransactions.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>💳</Text>
+                <Text style={styles.emptyIcon}>💸</Text>
                 <Text style={styles.emptyText}>No transactions yet</Text>
-                <Text style={styles.emptySubtext}>Add your first transaction to get started</Text>
+                <Text style={styles.emptySubtext}>Tap + to add one</Text>
               </View>
             ) : (
-              <View style={styles.transactionsList}>
-                {recentTransactions.map((transaction, index) => (
-                  <FadeIn key={transaction.id} delay={500 + index * 100}>
-                    <AnimatedButton
-                      style={styles.transactionItem}
-                      onPress={() => { }} // Add navigation to transaction details
-                    >
-                      <View style={styles.transactionLeft}>
-                        <View
-                          style={[
-                            styles.transactionIcon,
-                            { backgroundColor: getTransactionColor(transaction.category, transaction.type) + '20' }
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.transactionIconText,
-                              { color: getTransactionColor(transaction.category, transaction.type) }
-                            ]}
-                          >
-                            {transaction.category.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                        <View style={styles.transactionInfo}>
-                          <Text style={styles.transactionCategory}>
-                            {transaction.category.charAt(0).toUpperCase() + transaction.category.slice(1)}
-                          </Text>
-                          <Text style={styles.transactionDescription}>
-                            {transaction.description}
-                          </Text>
-                        </View>
-                      </View>
-                      <Text style={[
-                        styles.transactionAmount,
-                        { color: transaction.type === 'income' ? THEME.primary : THEME.danger }
-                      ]}>
-                        {transaction.type === 'income' ? '+' : '-'}
-                        {formatCurrency(transaction.amount, transaction.currency)}
+              recentTransactions.map((t, i) => (
+                <View key={t.id} style={styles.transactionItem}>
+                  <View style={styles.transactionLeft}>
+                    <View style={[styles.transactionIcon, { backgroundColor: getTransactionColor(t.category, t.type) + '20' }]}>
+                      <Text style={{ fontSize: 20 }}>
+                        {t.type === 'income' ? '↓' : '↑'}
                       </Text>
-                    </AnimatedButton>
-                  </FadeIn>
-                ))}
-              </View>
+                    </View>
+                    <View style={styles.transactionInfo}>
+                      <Text style={styles.transactionCategory}>{t.description || t.category}</Text>
+                      <Text style={styles.transactionDescription}>
+                        {new Date(t.date).toLocaleDateString()}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={[styles.transactionAmount, { color: t.type === 'income' ? THEME.primary : THEME.danger }]}>
+                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount, t.currency)}
+                  </Text>
+                </View>
+              ))
             )}
-          </GlassCard>
+          </View>
         </SlideUp>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME.background,
   },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: THEME.spacing.lg,
-    gap: THEME.spacing.lg,
-    paddingBottom: 120, // Space for floating tab bar
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
   header: {
-    marginBottom: THEME.spacing.md,
+    marginBottom: THEME.spacing.xl,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   headerTitle: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: THEME.text,
-    marginBottom: THEME.spacing.xs,
+    letterSpacing: -1,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: THEME.textSecondary,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  netWorthCard: {
+    marginBottom: THEME.spacing.lg,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: THEME.spacing.md,
+    marginBottom: THEME.spacing.sm,
   },
   cardTitle: {
+    fontSize: 14,
     color: THEME.textSecondary,
-    fontSize: 16,
-    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    fontWeight: '600',
   },
   indicator: {
-    width: 24,
-    height: 24,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   indicatorText: {
-    color: THEME.background,
     fontSize: 12,
     fontWeight: 'bold',
-  },
-  netWorthCard: {
-    ...THEME.shadow.large,
   },
   primaryAmount: {
+    fontSize: 42,
+    fontWeight: '800',
     color: THEME.text,
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: THEME.spacing.xs,
+    letterSpacing: -1,
+    marginBottom: 4,
   },
   secondaryAmount: {
-    color: THEME.textSecondary,
     fontSize: 18,
-    marginBottom: THEME.spacing.md,
+    color: THEME.textSecondary,
+    fontWeight: '500',
   },
-  netWorthChart: {
-    height: 4,
-    backgroundColor: THEME.glass.border,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  chartBar: {
-    height: '100%',
-    backgroundColor: THEME.primary,
-    borderRadius: 2,
-  },
-  revenueCard: {
-    ...THEME.shadow.medium,
-  },
-  revenueIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  revenueIndicatorText: {
-    color: THEME.text,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  revenueAmount: {
-    color: THEME.primary,
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: THEME.spacing.xs,
-  },
-  revenueBreakdown: {
+  row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: THEME.spacing.md,
+    marginBottom: THEME.spacing.xl,
+  },
+  halfCard: {
+    flex: 1,
+  },
+  statAmount: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: THEME.text,
+    marginTop: THEME.spacing.sm,
+    marginBottom: 2,
   },
   revenueText: {
-    color: THEME.textSecondary,
-    fontSize: 14,
+    fontSize: 12,
+    color: THEME.textMuted,
   },
-  activityCard: {
-    ...THEME.shadow.medium,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: THEME.spacing.md,
+    gap: THEME.spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: THEME.text,
   },
   activityCount: {
+    backgroundColor: THEME.glass.border,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  activityCountText: {
     color: THEME.textSecondary,
     fontSize: 12,
-    backgroundColor: THEME.glass.background,
-    paddingHorizontal: THEME.spacing.sm,
-    paddingVertical: THEME.spacing.xs,
-    borderRadius: 8,
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: THEME.spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: THEME.spacing.md,
-  },
-  emptyText: {
-    color: THEME.text,
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: THEME.spacing.xs,
-  },
-  emptySubtext: {
-    color: THEME.textSecondary,
-    fontSize: 14,
-    textAlign: 'center',
+    fontWeight: 'bold',
   },
   transactionsList: {
     gap: THEME.spacing.sm,
@@ -341,14 +285,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: THEME.spacing.md,
     backgroundColor: THEME.glass.background,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: THEME.glass.border,
   },
   transactionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    gap: THEME.spacing.md,
   },
   transactionIcon: {
     width: 40,
@@ -356,27 +300,38 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: THEME.spacing.md,
-  },
-  transactionIconText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   transactionInfo: {
-    flex: 1,
+    gap: 2,
   },
   transactionCategory: {
-    color: THEME.text,
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: THEME.spacing.xs / 2,
+    color: THEME.text,
   },
   transactionDescription: {
+    fontSize: 12,
     color: THEME.textSecondary,
-    fontSize: 14,
   },
   transactionAmount: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
+  emptyState: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: THEME.text,
+    fontWeight: '600',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: THEME.textSecondary,
+  }
 });

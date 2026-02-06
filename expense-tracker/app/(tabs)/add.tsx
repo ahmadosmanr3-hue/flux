@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Alert, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFinance } from '@/contexts/FinanceContext';
 import { CATEGORIES, THEME } from '@/constants/finance';
 import { GlassCard } from '@/components/GlassCard';
 import { FadeIn, SlideUp, AnimatedButton } from '@/components/Animations';
 import * as Haptics from 'expo-haptics';
+import { PremiumBackground } from '@/components/PremiumBackground';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -82,13 +83,14 @@ export default function AddTransactionScreen() {
   const convertedAmount = parseFloat(amount || '0') / exchangeRate;
 
   return (
-    <LinearGradient
-      colors={[THEME.background, THEME.backgroundSecondary]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      <PremiumBackground />
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: Platform.OS === 'ios' ? 180 : 150 }
+        ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -303,13 +305,14 @@ export default function AddTransactionScreen() {
           </AnimatedButton>
         </SlideUp>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME.background,
   },
   scrollView: {
     flex: 1,
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
   content: {
     padding: THEME.spacing.lg,
     gap: THEME.spacing.lg,
-    paddingBottom: 120, // Space for floating tab bar
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
   header: {
     marginBottom: THEME.spacing.md,

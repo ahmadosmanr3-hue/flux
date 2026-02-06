@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { useFinance } from '@/contexts/FinanceContext';
 import { THEME } from '@/constants/finance';
 import { GlassCard } from '@/components/GlassCard';
 import { FadeIn, SlideUp, AnimatedButton } from '@/components/Animations';
 import * as Haptics from 'expo-haptics';
+import { PremiumBackground } from '@/components/PremiumBackground';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SettingsScreen() {
   const { exchangeRate, updateExchangeRate, clearAllData } = useFinance();
@@ -68,13 +69,14 @@ export default function SettingsScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={[THEME.background, THEME.backgroundSecondary]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      <PremiumBackground />
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: Platform.OS === 'ios' ? 140 : 120 }
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
@@ -269,13 +271,14 @@ export default function SettingsScreen() {
           </GlassCard>
         </SlideUp>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME.background,
   },
   scrollView: {
     flex: 1,
@@ -283,6 +286,7 @@ const styles = StyleSheet.create({
   content: {
     padding: THEME.spacing.lg,
     gap: THEME.spacing.lg,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingBottom: 120, // Space for floating tab bar
   },
   header: {
@@ -401,6 +405,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: THEME.primary,
     borderRadius: 2,
+    overflow: 'hidden',
   },
   dataManagementCard: {
     ...THEME.shadow.medium,
