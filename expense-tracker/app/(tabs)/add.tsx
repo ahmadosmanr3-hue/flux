@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     padding: THEME.spacing.lg,
     gap: THEME.spacing.lg,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: 200, // Extra space for tab bar
   },
   header: {
     marginBottom: THEME.spacing.md,
