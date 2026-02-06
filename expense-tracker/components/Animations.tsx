@@ -46,14 +46,13 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onPressOut={handlePressOut}
       activeOpacity={opacity}
       disabled={disabled}
+      style={style}
     >
       <Animated.View
-        style={[
-          style,
-          {
-            transform: [{ scale: animatedValue }],
-          },
-        ]}
+        style={{
+          width: '100%',
+          transform: [{ scale: animatedValue }],
+        }}
       >
         {children}
       </Animated.View>
